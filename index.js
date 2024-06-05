@@ -1,5 +1,5 @@
-// Función principal para mostrar la hora actual
-let displayArea = displayTime;
+// Actualizar reloj en tiempo real
+let displayArea = document.getElementById("timeDisplay");
 const updateClock = () => {
     let today = new Date();
     let hrs = addLeadingZero(today.getHours());
@@ -8,61 +8,63 @@ const updateClock = () => {
     displayArea.innerHTML = `${hrs} : ${mins} : ${secs}`;
 }
 
-// Agregar ceros delante si es necesario
+// Función para agregar ceros delante
 const addLeadingZero = (timeUnit) => {
     return timeUnit < 10 ? `0${timeUnit}` : timeUnit;
 }
 setInterval(updateClock, 1000);
 
-// Sección de cuenta regresiva
+// Función para manejar la cuenta regresiva
 const startCountdown = () => {
-    let hrsCount = userInputHr.value;
-    let minsCount = userInputMin.value;
-    let secsCount = userInputSec.value;
+    let hrsCount = document.getElementById("inputHours").value;
+    let minsCount = document.getElementById("inputMinutes").value;
+    let secsCount = document.getElementById("inputSeconds").value;
     secsCount--;
-    userInputSec.value = secsCount;
+    document.getElementById("inputSeconds").value = secsCount;
+
     setTimeout(startCountdown, 1000);
-    
+
     if (secsCount < 0 && minsCount == 0 && hrsCount == 0) {
         clearTimeout(startCountdown);
         resetInputs();
-    }
-    if (secsCount < 0 && minsCount > 0) {
-        userInputSec.value = 59;
-        userInputMin.value--;
-    }
-    if (secsCount < 0 && hrsCount > 0) {
-        userInputSec.value = 59;
-        userInputMin.value = 59;
-        userInputHr.value--;
+    } else if (secsCount < 0) {
+        if (minsCount > 0) {
+            document.getElementById("inputSeconds").value = 59;
+            document.getElementById("inputMinutes").value--;
+        } else if (hrsCount > 0) {
+            document.getElementById("inputSeconds").value = 59;
+            document.getElementById("inputMinutes").value = 59;
+            document.getElementById("inputHours").value--;
+        }
     }
 }
 
 const resetInputs = () => {
-    userInputHr.value = "00";
-    userInputMin.value = "00";
-    userInputSec.value = "00";
+    document.getElementById("inputHours").value = "00";
+    document.getElementById("inputMinutes").value = "00";
+    document.getElementById("inputSeconds").value = "00";
 }
 
-// Sección de cronómetro
+// Cronómetro
 const operateWatch = () => {
-    mywatchmillisec.value++;
+    let ms = document.getElementById("millisecondsWatch");
+    ms.value++;
     timeout = setTimeout(operateWatch, 10);
-    updateWatchValues();
-}
 
-const updateWatchValues = () => {
-    if (mywatchmillisec.value == 100) {
-        mywatchsec.value++;
-        mywatchmillisec.value = 0;
+    if (ms.value == 100) {
+        let s = document.getElementById("secondsWatch");
+        s.value++;
+        ms.value = 0;
     }
-    if (mywatchsec.value == 60) {
-        mywatchmin.value++;
-        mywatchsec.value = 0;
+    if (document.getElementById("secondsWatch").value == 60) {
+        let m = document.getElementById("minutesWatch");
+        m.value++;
+        document.getElementById("secondsWatch").value = 0;
     }
-    if (mywatchmin.value == 60) {
-        mywatchhr.value++;
-        mywatchmin.value = 0;
+    if (document.getElementById("minutesWatch").value == 60) {
+        let h = document.getElementById("hoursWatch");
+        h.value++;
+        document.getElementById("minutesWatch").value = 0;
     }
 }
 
@@ -72,42 +74,32 @@ const pauseWatch = () => {
 
 const resetWatch = () => {
     clearTimeout(timeout);
-    mywatchhr.value = "00";
-    mywatchmin.value = "00";
-    mywatchsec.value = "00";
-    mywatchmillisec.value = "00";
+    document.getElementById("hoursWatch").value = "00";
+    document.getElementById("minutesWatch").value = "00";
+    document.getElementById("secondsWatch").value = "00";
+    document.getElementById("millisecondsWatch").value = "00";
 }
 
-// Sección de alarma
+// Alarma
+let mySound = new Audio("audio1.mp3");
+
 const activateAlarm = () => {
+    let setHour = document.getElementById("alarmHours").value;
+    let setMin = document.getElementById("alarmMinutes").value;
     let currentTime = new Date();
-    let setHour = alarmHr.value;
-    let setMin = alarmMin.value;
-    updateAlarmDisplay(`Alarm set for ${setHour}:${setMin}`);
-    checkAlarmTime(setHour, setMin);
-}
+    document.getElementById("disp").innerHTML = `Alarma configurada para las ${setHour}:${setMin}`;
+    document.getElementById("disp").style.visibility = "visible";
 
-const checkAlarmTime = (hour, minute) => {
-    let currentTime = new Date();
-    if (hour == currentTime.getHours() && minute == currentTime.getMinutes()) {
+    if (setHour == currentTime.getHours() && setMin == currentTime.getMinutes()) {
         mySound.play();
     } else {
-        setTimeout(() => checkAlarmTime(hour, minute), 1000);
+        setTimeout(activateAlarm, 60000); // Revisar cada minuto
     }
 }
 
 const deactivateAlarm = () => {
     mySound.pause();
-    resetAlarmInputs();
-}
-
-const resetAlarmInputs = () => {
-    alarmHr.value = "";
-    alarmMin.value = "";
-    updateAlarmDisplay("");
-}
-
-const updateAlarmDisplay = (message) => {
-    document.getElementById("disp").innerHTML = message;
-    document.getElementById("disp").style.visibility = "visible";
+    document.getElementById("alarmHours").value = "";
+    document.getElementById("alarmMinutes").value = "";
+    document.getElementById("disp").style.visibility = "hidden";
 }
