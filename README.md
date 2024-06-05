@@ -1,3 +1,5 @@
-# Javascript-Timer-and-Alarm-Clock
-This is a javascript timer and alarm clock Html code. 
-Corrections are welcomed by me.
+![](./timeral.PNG)
+# Online-Timer-and-Alarm-Clock
+
+Simple Html css and Js Based Web-App Where You Can set Alarm And Timer.
+
