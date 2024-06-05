@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+    <head lang="en-US">
+         <title>Javascript Timer and Alarm Clock</title>
+         <meta name="keywords" content="Timer, Alarm">
+         <meta name="description" content="A Javascript Timer and Alarm Clock"/>
+         <meta name="author" content="Prince Loyal">
+         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		 <meta charset="UTF-8"/> 
+         <style>
+             button {background-color:skyblue;}
+             body {background-color:black;color:lightgreen;text-align:center}
+             #dateDisp,#timeDisp {color:yellow}
+             #errDisp, #timerDone {color:red}
+             #alarm, #timer {color:green}
+         </style> 
+    </head>
+    <body onload="setInterval(dateAndTimeDisplay, 1)"> 
+        <section>
+            <header>
+                <h1>This Is A Javascript timer and Alarm Clock</h1>
+                <h2>The date and time is <span id="dateDisp"></span>, <span id="timeDisp"></span></h2>
+            </header>
+            <script>
+                //Displays the current time
+                function dateAndTimeDisplay() {
+                    currentDateAndTime = new Date();
+                    document.getElementById("dateDisp").innerHTML = currentDateAndTime.toLocaleDateString();
+                    document.getElementById("timeDisp").innerHTML = currentDateAndTime.toLocaleTimeString();
+                }
+            </script>
+        </section>
+        <section>
+            <header>
+                <i><h2>Alarm</h2></i>
+            </header>
+            <div id="alarm">
+                <label for="date">Date</label>
+                <input id="date" type="date"><br>
+                <label for="time">Time</label>
+                <input id="time" type="time"><br>
+                <button onclick="alarm()">Submit</button>
+                <p id="errDisp"></p>
+            </div>
+            <div id="alarmId"></div><br>
+            <script>
+                //Reads alarm's input and runs the alarm
+                function alarm() {
+                    date = document.getElementById("date").value;
+                    time = document.getElementById("time").value;
+                    currentDateAndTime = new Date();
+                    alarmDateAndTime = new Date(date);
+                    alarmDateAndTime.setHours(parseInt(time[0]+time[1]))
+                    alarmDateAndTime.setMinutes(parseInt(time[3]+time[4]))
+                    try {
+                        if(time == "") throw "Time input is required";
+                        if(date == "") throw "Date input is required";
+                        if(currentDateAndTime.getFullYear() > alarmDateAndTime.getFullYear()) throw "The current year value: "+currentDateAndTime.getFullYear()+" is greater than the alarm's year value: "+alarmDateAndTime.getFullYear();
+                        while(currentDateAndTime.getFullYear() >= alarmDateAndTime.getFullYear()){
+                            const month = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+                            if(currentDateAndTime.getMonth() > alarmDateAndTime.getMonth()) throw "The current month value: "+month[currentDateAndTime.getUTCMonth()]+"  is greater than the alarm's month value: "+month[alarmDateAndTime.getUTCMonth()];
+                            if(currentDateAndTime.getUTCDate() > alarmDateAndTime.getUTCDate()) throw "The current day value: " +currentDateAndTime.getUTCDate()+" is greater than the alarm's day value: "+alarmDateAndTime.getUTCDate();
+                            while(currentDateAndTime.getUTCDate() >= alarmDateAndTime.getUTCDate()) {
+                                 if(currentDateAndTime.getHours() > alarmDateAndTime.getHours()) throw "The current hour value: "+currentDateAndTime.getHours()+" is greater than the alarm's hour value: "+alarmDateAndTime.getHours();
+                                 break;
+                            }
+                            while(currentDateAndTime.getHours() >= alarmDateAndTime.getHours()) {
+                                 if(currentDateAndTime.getMinutes() > alarmDateAndTime.getMinutes()) throw "The current minute value: "+currentDateAndTime.getMinutes()+" is greater than the alarm's minute value: "+alarmDateAndTime.getMinutes();
+                                break;
+                             }
+                            break;
+                        }
+                        currentDateAndTime.setSeconds(0);
+                        if(currentDateAndTime.toString() == alarmDateAndTime.toString()) throw "The alarm's date and time value: "+alarmDateAndTime.toLocaleDateString()+", "+alarmDateAndTime.toLocaleTimeString()+" was the same as the current date and time value";
+                        document.getElementById("alarm").innerHTML = "<h2><small>Alarm is set for: </small><span id='dateDisp'>" +alarmDateAndTime.toLocaleDateString()+"</span>, <span id='timeDisp'>"+alarmDateAndTime.toLocaleTimeString()+"</span></h2>";
+                        alarmInterval = setInterval(function(){
+                           if (currentDateAndTime.toString() == alarmDateAndTime.toString()) {
+                                alarmStop();
+                            }
+                        }, 1000)
+                    const alarmP = document.createElement('p');
+                    alarmP.id = "alarmReset";
+                    alarmP.innerHTML = "<button onclick='alarmReset()'>Click to reset alarm</button>";
+                    document.getElementById("alarmId").appendChild(alarmP);
+                    } catch(err) {
+                        document.getElementById("errDisp").innerHTML = err;
+                    }
+                }
+                //stops the alarm
+                function alarmStop() {
+                    clearInterval(alarmInterval);
+                    document.getElementById("alarm").innerHTML = 
+                    `<h2 id="timerDone">Your alarm is done. Playing alarm tone now</h2> 
+                    <audio loop autoplay> 
+                    <source src="alarm.mp3" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                    </audio>`;
+                }
+                //Resets the alarm
+                function alarmReset() {
+                    clearInterval(alarmInterval);
+                    document.getElementById("alarm").innerHTML = 
+                    `<label for="date">Date</label>
+                    <input id="date" type="date"><br>
+                    <label for="time">Time</label>
+                    <input id="time" type="time"><br>
+                    <button onclick="alarm()">Submit</button>
+                    <p id="errDisp"></p>`;
+                    document.getElementById("alarmReset").remove();
+                }
+            </script>
+        </section>
+        <section>
+            <header>
+                <i><h2>Timer</h2></i>
+            </header>
+            <div id="timer">
+                <label for="hr">Hours</label>
+                <input id="hr" type="Number"><br><br>
+                <label for="min">Minutes</label>
+                <input id="min" type="Number"><br><br>
+                <label for="sec">Seconds</label>
+                <input id="sec" type="Number"><br>
+                <button onclick="timer()">Submit</button>
+            </div>
+            <div id="timerId"></div>
+            <script>
+                //Reads timer's input and runs the timer
+                function timer() {
+                    hourValue = document.getElementById("hr").value;
+                    minValue = document.getElementById("min").value;
+                    secValue = document.getElementById("sec").value;
+                    if(hourValue == ""){hourValue = 0;} 
+                    else {hourValue = parseInt(hourValue);}
+                    if(minValue == ""){minValue = 0;} 
+                    else {minValue = parseInt(minValue);}
+                    if(secValue == "") {secValue = 0; } 
+                    else { secValue = parseInt(secValue);}
+                    document.getElementById("timer").innerHTML = "<h2>" + hourValue + " : " + minValue + " : " + secValue + "</h2>";
+                    reduceTime = setInterval( function() {
+                        secValue--;
+                        if(secValue == -1) {secValue = 0;} 
+                        document.getElementById("timer").innerHTML = "<h2>" + hourValue + " : " + minValue + " : " + secValue + "</h2>";
+                        if(secValue == 0 && minValue == 0 && hourValue == 0){stopTimer();}
+                        if(secValue == 0) {minValue--; secValue = 60;}
+                        if(minValue == -1) { minValue = 0;}
+                        if(minValue == 0 && hourValue != 0) {hourValue--; minValue = 60;}
+                        
+                    }, 1000);
+                    const timerP = document.createElement('p');
+                    timerP.id = "timerReset";
+                    timerP.innerHTML = "<button onclick='timerReset()'>Click to reset alarm</button>";
+                    document.getElementById("timerId").appendChild(timerP);
+                }
+                //Stops the timer
+                function stopTimer() {
+                    clearInterval(reduceTime)
+                    document.getElementById("timer").innerHTML =
+                    `<h2 id="timerDone">Your timer is done. Playing timer tone now</h2> 
+                    <audio loop autoplay> 
+                    <source src="alarm.mp3" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                    </audio>`;
+                 }
+                 //Resets the timer
+                function timerReset() {
+                    clearInterval(reduceTime)
+                    document.getElementById("timer").innerHTML = 
+                    `<label for="hr">Hours</label>
+                    <input id="hr" type="Number"><br><br>
+                    <label for="min">Min</label>
+                    <input id="min" type="Number"><br><br>
+                    <label for="sec">Sec</label>
+                    <input id="sec" type="Number"><br>
+                    <button onclick="timer()">Submit</button>`;
+                    document.getElementById("timerReset").remove();
+                }
+            </script>
+        </section>
+    </body>
+</html>
