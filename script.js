@@ -18,7 +18,7 @@ const formatTime = (unit) => {
 clock();
 
 // Sonido a ser reproducido una vez que el temporizador alcance cero.
-let audio = new Audio('tu_archivo_de_sonido.mp3'); // Asegúrate de reemplazar 'tu_archivo_de_sonido.mp3' con la ruta correcta
+let audio = new Audio('audio1.mp3'); // Asegúrate de reemplazar 'tu_archivo_de_sonido.mp3' con la ruta correcta
 
 // Función para el temporizador de cuenta regresiva
 const countDown = () => {
