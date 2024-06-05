@@ -14,6 +14,7 @@ const addLeadingZero = (timeUnit) => {
 setInterval(updateClock, 1000);
 
 // Función para la cuenta regresiva
+let countdownTimer;
 const startCountdown = () => {
     let hrsCount = parseInt(document.getElementById("inputHours").value) || 0;
     let minsCount = parseInt(document.getElementById("inputMinutes").value) || 0;
@@ -38,7 +39,18 @@ const startCountdown = () => {
     document.getElementById("inputMinutes").value = minsCount;
     document.getElementById("inputSeconds").value = secsCount;
 
-    setTimeout(startCountdown, 1000);
+    countdownTimer = setTimeout(startCountdown, 1000);
+}
+
+const pauseCountdown = () => {
+    clearTimeout(countdownTimer);
+}
+
+const resetCountdown = () => {
+    clearTimeout(countdownTimer);
+    document.getElementById("inputHours").value = "";
+    document.getElementById("inputMinutes").value = "";
+    document.getElementById("inputSeconds").value = "";
 }
 
 // Función para el cronómetro
@@ -85,6 +97,7 @@ const resetWatch = () => {
 
 // Función para la alarma
 let mySound = new Audio("audio1.mp3");
+let alarmTimer;
 const activateAlarm = () => {
     let setHour = parseInt(document.getElementById("alarmHours").value);
     let setMin = parseInt(document.getElementById("alarmMinutes").value);
@@ -93,11 +106,14 @@ const activateAlarm = () => {
     if (setHour === currentTime.getHours() && setMin === currentTime.getMinutes()) {
         mySound.play();
     } else {
-        setTimeout(activateAlarm, 60000); // Comprueba cada minuto
+        alarmTimer = setTimeout(activateAlarm, 60000); // Comprueba cada minuto
     }
 }
 
 const deactivateAlarm = () => {
     mySound.pause();
+    mySound.currentTime = 0;
+    document.getElementById("alarmHours").value = "";
+    document.getElementById("alarmMinutes").value = "";
+    clearTimeout(alarmTimer);
 }
-//
